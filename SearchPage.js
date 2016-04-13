@@ -129,6 +129,21 @@ class SearchPage extends Component {
     console.log(this.state.searchString);
   }
 
+  onLocationPressed() {
+    navigator.geolocation.getCurrentPosition(
+      location => {
+        var search = location.coords.latitude + ',' + location.coords.longitude;
+        this.setState({ searchString: search });
+        var query = urlForQueryAndPage('centre_point', search, 1);
+        this._executeQuery(query);
+      },
+      error => {
+        this.setState({
+          message: 'There was a problem with obtaining your location: ' + error
+        });
+      });
+  }
+
   render() {
     var spinner = this.state.isLoading ?
       ( <ActivityIndicatorIOS
@@ -157,9 +172,9 @@ class SearchPage extends Component {
         </View>
         <TouchableHighlight style={styles.button}
             underlayColor='#99d9f4'>
-          <Text style={styles.buttonText}>Location</Text>
+          <Text style={styles.buttonText} onPress={this.onLocationPressed.bind(this)}>Location</Text>
         </TouchableHighlight>
-        <Image source={require('./Resources/house.png')} style={styles.image}/>
+        <Image source={require('./resources/house.png')} style={styles.image}/>
         {spinner}
         <Text style={styles.description}>{this.state.message}</Text>
       </View>
